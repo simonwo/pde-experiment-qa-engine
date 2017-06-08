@@ -2,13 +2,22 @@ require_relative 'lib/compiler'
 require_relative 'lib/parser'
 
 class QueryEngine
+  ATTRIBUTES = {
+    :"attr.a" => lambda {|id| 6 },
+    :"attr.b" => lambda {|id| 7 }
+  }
+
   def initialize compiler_class, parser_class
     @Compiler = compiler_class
     @Parser = parser_class
   end
 
   def run id, query_strings
-    compiler = @Compiler.new
+    attributes = ATTRIBUTES.map do |pair|
+       [pair.first, lambda { pair.last.call(id) }]
+    end.to_h
+
+    compiler = @Compiler.new attributes
     parser = @Parser.new
 
     query_strings.map do |query_string|
