@@ -10,12 +10,18 @@ class QueryCompiler
     :gt?  => lambda {|proc_a, proc_b| proc_a.call > proc_b.call},
   }
 
+  def initialize symbols={}
+    @symbols = DEFAULT_SYMBOLS.update symbols
+  end
+
   def compile ast
     case
     when ast.is_a?(Array)
-      function = DEFAULT_SYMBOLS[ast.first]
+      function = @symbols[ast.first]
       args = ast.drop(1).map(&method(:compile))
-      raise "#{args.size} for function of #{function.arity} arguments" if function.arity >= 0 && function.arity != args.size
+      if function.arity >= 0 && function.arity != args.size
+        raise "#{args.size} for function of #{function.arity} arguments"
+      end
       lambda { function.call(*args) }
     else
       lambda { ast }
