@@ -3,8 +3,8 @@ require_relative 'lib/parser'
 
 class QueryEngine
   ATTRIBUTES = {
-    :"attr.a" => lambda {|id| 6 },
-    :"attr.b" => lambda {|id| 7 }
+    :"dwp.pip.mobility" => lambda {|id| 6 },
+    :"dwp.dla.higher" => lambda {|id| true }
   }
 
   def initialize compiler_class, parser_class

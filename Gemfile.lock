@@ -5,16 +5,27 @@ GEM
     hamster (3.0.0)
       concurrent-ruby (~> 1.0)
     link_header (0.0.8)
+    mustermann (1.0.0)
+    rack (2.0.3)
+    rack-protection (2.0.0)
+      rack
     rdf (2.2.6)
       hamster (~> 3.0)
       link_header (~> 0.0, >= 0.0.8)
+    sinatra (2.0.0)
+      mustermann (~> 1.0)
+      rack (~> 2.0)
+      rack-protection (= 2.0.0)
+      tilt (~> 2.0)
     sxp (1.0.0)
       rdf (~> 2.0)
+    tilt (2.0.7)
 
 PLATFORMS
   x86-mingw32
 
 DEPENDENCIES
+  sinatra
   sxp
 
 BUNDLED WITH
