@@ -1,5 +1,4 @@
-require_relative 'lib/compiler'
-require_relative 'lib/parser'
+require 'functional/either'
 
 class QueryEngine
   ATTRIBUTES = {
@@ -7,26 +6,39 @@ class QueryEngine
     :"dwp.dla.higher" => lambda {|id| true }
   }
 
-  def initialize compiler_class, parser_class
+  def initialize compiler_class, parser_class, checker_class, runner_id
     @Compiler = compiler_class
     @Parser = parser_class
+    @PermissionChecker = checker_class
+    @runner = runner_id
   end
 
-  def run id, query_strings
+  def run target_id, query_strings
     attributes = ATTRIBUTES.map do |pair|
-       [pair.first, lambda { pair.last.call(id) }]
+       [pair.first, lambda { pair.last.call(target_id) }]
     end.to_h
 
     compiler = @Compiler.new attributes
     parser = @Parser.new
+    permissionchecker = @PermissionChecker.new
 
     query_strings.map do |query_string|
-      func = compiler.compile parser.parse query_string
-      func.call
+      parsed_query = parser.parse query_string
+      if permissionchecker.check @runner, parsed_query
+        func = compiler.compile parsed_query
+        Functional::Either.value func.call
+      else
+        Functional::Either.error :permission_denied
+      end
     end
   end
 end
 
 if __FILE__ == $0
-  p QueryEngine.new(QueryCompiler, QueryParser).run(0, ARGV)
+  require 'partialclass'
+  require_relative 'lib/compiler'
+  require_relative 'lib/parser'
+  require_relative 'lib/permissionchecker'
+
+  p QueryEngine.new(QueryCompiler, QueryParser, PermissionChecker.specialize(QueryParser, []), nil).run(0, ARGV)
 end

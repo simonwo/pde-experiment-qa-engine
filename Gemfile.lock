@@ -2,10 +2,12 @@ GEM
   remote: https://rubygems.org/
   specs:
     concurrent-ruby (1.0.5)
+    functional-ruby (1.3.0)
     hamster (3.0.0)
       concurrent-ruby (~> 1.0)
     link_header (0.0.8)
     mustermann (1.0.0)
+    partialclass (0.2.0)
     rack (2.0.3)
     rack-protection (2.0.0)
       rack
@@ -25,6 +27,8 @@ PLATFORMS
   x86-mingw32
 
 DEPENDENCIES
+  functional-ruby
+  partialclass
   sinatra
   sxp
 

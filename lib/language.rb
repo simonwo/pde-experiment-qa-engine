@@ -9,7 +9,7 @@ module Language
     :eq?  => lambda {|proc_a, proc_b| proc_a.call == proc_b.call},
     :>    => lambda {|proc_a, proc_b| proc_a.call > proc_b.call},
     :>=   => lambda {|proc_a, proc_b| proc_a.call >= proc_b.call}
-  }
+  }.freeze
 
-  LiteralTypes = [String, Symbol, Bignum, Float, Fixnum, TrueClass, FalseClass]
+  LiteralTypes = [String, Symbol, Bignum, Float, Fixnum, TrueClass, FalseClass].freeze
 end
