@@ -40,5 +40,5 @@ if __FILE__ == $0
   require_relative 'lib/parser'
   require_relative 'lib/permissionchecker'
 
-  p QueryEngine.new(QueryCompiler, QueryParser, PermissionChecker.specialize(QueryParser, []), nil).run(0, ARGV)
+  p QueryEngine.new(QueryCompiler.specialize({}), QueryParser, PermissionChecker.specialize(QueryParser, []), nil).run(0, ARGV)
 end

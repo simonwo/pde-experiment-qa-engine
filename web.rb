@@ -1,4 +1,5 @@
 require 'sinatra'
+require 'yaml'
 require 'partialclass'
 require 'json'
 require_relative 'engine'
@@ -6,10 +7,15 @@ require_relative 'lib/compiler'
 require_relative 'lib/parser'
 require_relative 'lib/permissionchecker'
 
-permissions = [{"id" => "blue-badge-service", "trees" => ["(>= (dwp.pip.mobility) 8)"]}]
+config = YAML.load_file(ARGV.first)
+permissions = config["permissions"] || []
+functions = (config["functions"] || []).inject({}) do |result, expansion|
+  result.merge expansion["name"].to_sym => QueryParser.new.parse(expansion["expression"])
+end
 
-ContextualChecker = PermissionChecker.specialize(QueryParser, permissions)
-Engine = QueryEngine.specialize(QueryCompiler, QueryParser, ContextualChecker)
+Checker = PermissionChecker.specialize(QueryParser, permissions)
+Compiler = QueryCompiler.specialize(functions)
+Engine = QueryEngine.specialize(Compiler, QueryParser, Checker)
 
 get '/query' do
   # TODO: security

@@ -3,8 +3,13 @@ require_relative 'language'
 class QueryCompiler
   DEFAULT_SYMBOLS = Language::Operators
 
-  def initialize symbols={}
+  def initialize expansions={}, symbols={} 
     @symbols = DEFAULT_SYMBOLS.merge symbols
+    functions = expansions.inject({}) do |result, expansion|
+      result.merge expansion.first => compile(expansion.last)
+    end
+    @symbols = @symbols.update functions
+    puts "Loaded symbols: #{@symbols.inspect}"
   end
 
   def compile ast

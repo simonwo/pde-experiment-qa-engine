@@ -1,0 +1,13 @@
+---
+datastores:
+- type: hash
+  contents: 
+  - id: 0
+    dwp.pip.mobility: 8
+  - id: 1
+    dwp.pip.mobility: 4
+
+permissions:
+- id: blue-badge-service
+  trees:
+  - (>= (dwp.pip.mobility) 8)

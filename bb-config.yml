@@ -1,0 +1,19 @@
+---
+datastores:
+- type: remote
+  url: http://localhost:11000/
+  permissions:
+  - (> (dwp.pip.mobility) 8)
+- type: remote
+  url: http://localhost:12000/
+  permissions:
+  - (dwp.dla.higher)
+
+permissions:
+- id: bb-capable
+  trees:
+  - (blue-badge?)
+
+functions:
+- name: blue-badge?
+  expression: (any? (> (dwp.pip.mobility) 8) (dwp.dla.higher))
