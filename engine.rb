@@ -1,24 +1,20 @@
 require 'functional/either'
 
 class QueryEngine
-  ATTRIBUTES = {
-    :"dwp.pip.mobility" => lambda {|id| 6 },
-    :"dwp.dla.higher" => lambda {|id| true }
-  }
-
-  def initialize compiler_class, parser_class, checker_class, runner_id
+  def initialize compiler_class, parser_class, checker_class, datastores, functions, runner_id
     @Compiler = compiler_class
     @Parser = parser_class
     @PermissionChecker = checker_class
     @runner = runner_id
+    @functions = functions
+    @datastores = datastores
   end
 
   def run target_id, query_strings
-    attributes = ATTRIBUTES.map do |pair|
-       [pair.first, lambda { pair.last.call(target_id) }]
-    end.to_h
-
-    compiler = @Compiler.new attributes
+    datastores = @datastores.map do |ds|
+      [ds.first, lambda { ds.last.call(target_id) }]
+    end
+    compiler = @Compiler.new datastores.to_a.concat(@functions)
     parser = @Parser.new
     permissionchecker = @PermissionChecker.new
 

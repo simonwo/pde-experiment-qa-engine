@@ -1,6 +1,9 @@
 require_relative 'language'
+require_relative 'ast'
 
 class PermissionChecker
+  include AST
+
   def initialize parser_class, config=[]
     @Parser = parser_class
     parser = @Parser.new
@@ -8,6 +11,7 @@ class PermissionChecker
     @permissions = config.inject({}) do |result, hash|
       result.update hash["id"] => (hash["trees"] || []).map(&parser.method(:parse)).to_a
     end
+    puts "Loaded permissions: #{@permissions.inspect}"
   end
 
   # Returns true if the named entity is allowed
@@ -33,15 +37,5 @@ class PermissionChecker
   # Returns true if the object is a literal
   def is_literal? obj
     return Language::LiteralTypes.any? {|type| obj.is_a? type }
-  end
-
-  # Checks whether two ASTs are equal.
-  # AST = [:x, :child, [:child, :grandchild], :child]
-  def tree_equal? a, b
-    if a.is_a?(Array) && b.is_a?(Array)
-      return a.zip(b).all? {|child_a, child_b| tree_equal?(child_a, child_b) }
-    else
-      return a == b
-    end
   end
 end

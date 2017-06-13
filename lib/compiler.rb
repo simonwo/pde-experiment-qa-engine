@@ -1,28 +1,32 @@
 require_relative 'language'
+require_relative 'ast'
 
 class QueryCompiler
+  include AST
+
   DEFAULT_SYMBOLS = Language::Operators
 
-  def initialize expansions={}, symbols={} 
+  def initialize expansions=[], symbols={} 
     @symbols = DEFAULT_SYMBOLS.merge symbols
-    functions = expansions.inject({}) do |result, expansion|
-      result.merge expansion.first => compile(expansion.last)
-    end
-    @symbols = @symbols.update functions
-    puts "Loaded symbols: #{@symbols.inspect}"
+    expansions.each do |expansion|
+      puts "Pre-compiling expansion #{expansion.first} => #{expansion.last}"
+      @expansions = (@expansions || {}).merge expansion.first => compile(expansion.last)
+    end 
   end
 
   def compile ast
-    case
-    when ast.is_a?(Array)
-      function = @symbols[ast.first]
-      args = ast.drop(1).map(&method(:compile))
-      if function.nil?
-        raise "No such function: #{ast.first}"
-      elsif function.arity >= 0 && function.arity != args.size
-        raise "#{args.size} for function of #{function.arity} arguments"
+    if ast.is_a?(Array)
+      if match = (@expansions || {}).keys.select {|exp| tree_equal? ast, exp }.first
+        lambda { @expansions[match].call }
+      else
+        function = @symbols[ast.first]
+        args = ast.drop(1).map(&method(:compile))
+        raise "No such function: #{ast.first}" if function.nil?
+        raise "#{args.size} for function of #{function.arity} arguments" if function.arity >= 0 && function.arity != args.size
+        lambda { function.call(*args) }
       end
-      lambda { function.call(*args) }
+    elsif ast.is_a?(Proc)
+      ast
     else
       lambda { ast }
     end
