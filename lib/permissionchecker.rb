@@ -25,6 +25,7 @@ class PermissionChecker
   # either is a subtree in the permitted array or
   # ends in a literal.
   def tree_permitted? tree, permitted_trees
+    puts "Checking permission on #{tree.inspect}"
     return true if is_literal? tree
     
     input_tree_equal = lambda {|permitted_tree| tree_equal? tree, permitted_tree}

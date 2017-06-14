@@ -3,6 +3,7 @@ require 'yaml'
 require 'partialclass'
 require 'json'
 require_relative 'engine'
+require_relative 'config'
 require_relative 'lib/compiler'
 require_relative 'lib/parser'
 require_relative 'lib/permissionchecker'
@@ -12,22 +13,17 @@ ATTRIBUTES = {
   [:"dwp.dla.higher"] => lambda {|id| true }
 }
 
-config = YAML.load_file(ARGV.first)
-permissions = config["permissions"] || []
-functions = (config["expansions"] || []).map do |expansion|
-  parser = QueryParser.new
-  [parser.parse(expansion["from"]), parser.parse(expansion["to"])]
-end
-
-Checker = PermissionChecker.specialize(QueryParser, permissions)
+config = YAMLConfig.new(QueryParser, ARGV.first)
+Checker = PermissionChecker.specialize(QueryParser, config.permissions)
 Compiler = QueryCompiler.specialize()
-Engine = QueryEngine.specialize(Compiler, QueryParser, Checker, ATTRIBUTES.to_a, functions.to_a)
+Engine = QueryEngine.specialize(Compiler, QueryParser, Checker, config.datastores.to_a, config.expansions.to_a)
+p config.datastores.to_a
 
 get '/query' do
   # TODO: security
   queries = if params[:query].is_a?(Array) then params[:query] else [params[:query]] end
   engine = Engine.new params[:auth]
-  engine.run(params[:id], queries).map(&method(:handle_query_result)).to_json
+  engine.run(params[:id].to_i, queries).map(&method(:handle_query_result)).to_json
 end
 
 def handle_query_result result

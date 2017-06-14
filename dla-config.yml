@@ -1,0 +1,19 @@
+---
+datastores:
+- type: hash
+  contents: 
+  - id: 0
+    dwp.dla.rate: 1400
+  - id: 1
+    dwp.dla.rate: 45
+  - id: 2
+    dwp.dla.rate: 1050
+
+permissions:
+- id: blue-badge-service
+  trees:
+  - (dwp.dla.higher)
+
+expansions:
+- from: (dwp.dla.higher)
+  to: (> (dwp.dla.rate) 1000)

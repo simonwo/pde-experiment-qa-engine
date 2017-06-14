@@ -6,6 +6,8 @@ datastores:
     dwp.pip.mobility: 8
   - id: 1
     dwp.pip.mobility: 4
+  - id: 2
+    dwp.pip.mobility: 2
 
 permissions:
 - id: blue-badge-service

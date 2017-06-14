@@ -1,11 +1,11 @@
 ---
 datastores:
 - type: remote
-  url: http://localhost:11000/
+  url: http://localhost:11000/query
   permissions:
-  - (> (dwp.pip.mobility) 8)
+  - (>= (dwp.pip.mobility) 8)
 - type: remote
-  url: http://localhost:12000/
+  url: http://localhost:12000/query
   permissions:
   - (dwp.dla.higher)
 
